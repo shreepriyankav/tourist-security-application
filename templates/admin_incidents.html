@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident & Check-In Monitoring</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), 
+                        url('https://picsum.photos/seed/emergency-monitoring/1920/1080.jpg') center/cover fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .bg-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            to {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            position: relative;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, #e74c3c, #f39c12);
+            border-radius: 2px;
+        }
+
+        h2 i {
+            color: #e74c3c;
+            animation: alertPulse 2s infinite;
+        }
+
+        @keyframes alertPulse {
+            0%, 100% { 
+                transform: scale(1);
+                color: #e74c3c;
+            }
+            50% { 
+                transform: scale(1.1);
+                color: #c0392b;
+            }
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        tr {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(236, 240, 241, 0.3);
+        }
+
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.08);
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Enhanced "Need Help" row styling */
+        tr[style*="background-color:#f8d7da"] {
+            background: linear-gradient(90deg, #f8d7da, #f5c6cb) !important;
+            position: relative;
+            animation: urgentPulse 2s infinite;
+        }
+
+        tr[style*="background-color:#f8d7da"]::before {
+            content: '\f071';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #e74c3c;
+            font-size: 1.2rem;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+            }
+            50% { 
+                box-shadow: 0 0 20px 5px rgba(231, 76, 60, 0.2);
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        td:first-child {
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        td:first-child::before {
+            content: '\f007';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #3498db;
+            font-size: 1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        /* Status color coding */
+        td:nth-child(2):contains("Need Help") {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        td:nth-child(2):contains("Check-In") {
+            color: #27ae60;
+        }
+
+        td:nth-child(2):contains("Emergency") {
+            color: #c0392b;
+            font-weight: 700;
+        }
+
+        td:nth-child(2):contains("Resolved") {
+            color: #7f8c8d;
+        }
+
+        .message-cell {
+            max-width: 400px;
+            position: relative;
+        }
+
+        .message-cell:hover {
+            cursor: help;
+        }
+
+        .time-cell {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-cell::before {
+            content: '\f017';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #95a5a6;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 35px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .back-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-button:hover i {
+            transform: translateX(-5px);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            th, td {
+                padding: 12px 10px;
+                font-size: 0.85rem;
+            }
+
+            .message-cell {
+                max-width: 200px;
+            }
+
+            tr[style*="background-color:#f8d7da"]::before {
+                left: -20px;
+            }
+        }
+
+        /* Loading animation */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background particles -->
+    <div class="bg-particles">
+        <i class="fas fa-exclamation-triangle particle" style="left: 5%; animation-delay: 0s; font-size: 2rem;"></i>
+        <i class="fas fa-shield-alt particle" style="left: 20%; animation-delay: 3s; font-size: 2.5rem;"></i>
+        <i class="fas fa-first-aid particle" style="left: 35%; animation-delay: 1s; font-size: 2.2rem;"></i>
+        <i class="fas fa-phone-alt particle" style="left: 50%; animation-delay: 4s; font-size: 2rem;"></i>
+        <i class="fas fa-map-marker-alt particle" style="left: 65%; animation-delay: 2s; font-size: 2.3rem;"></i>
+        <i class="fas fa-bell particle" style="left: 80%; animation-delay: 5s; font-size: 2.1rem;"></i>
+        <i class="fas fa-user-shield particle" style="left: 95%; animation-delay: 3.5s; font-size: 2.4rem;"></i>
+    </div>
+
+    <div class="container">
+        <h2><i class="fas fa-shield-alt"></i>Incident & Check-In Monitoring</h2>
+        
+        <div class="table-wrapper">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user"></i>Tourist</th>
+                        <th><i class="fas fa-info-circle"></i>Status</th>
+                        <th><i class="fas fa-comment-dots"></i>Message</th>
+                        <th><i class="fas fa-clock"></i>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in incidents %}
+                    <tr {% if i.status == 'Need Help' %}style="background-color:#f8d7da"{% endif %}>
+                        <td>{{ i.name }}</td>
+                        <td>{{ i.status }}</td>
+                        <td class="message-cell">{{ i.message }}</td>
+                        <td class="time-cell">{{ i.timestamp }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="button-container">
+            <a href="/admin/dashboard" class="back-button">
+                <i class="fas fa-arrow-left"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // Add animations to table rows on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                }, 100 * index);
+            });
+
+            // Add click effect to rows
+            rows.forEach(row => {
+                row.addEventListener('click', function() {
+                    this.style.animation = 'pulse 0.5s ease';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 500);
+                });
+            });
+
+            // Highlight urgent messages
+            const urgentRows = document.querySelectorAll('tr[style*="background-color:#f8d7da"]');
+            urgentRows.forEach(row => {
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+
+        // Add loading effect on back button click
+        document.querySelector('.back-button').addEventListener('click', function(e) {
+            document.querySelector('.loading-overlay').style.display = 'flex';
+        });
+
+        // Auto-refresh simulation (optional)
+        setInterval(() => {
+            const icon = document.querySelector('h2 i');
+            icon.style.animation = 'none';
+            setTimeout(() => {
+                icon.style.animation = 'alertPulse 2s infinite';
+            }, 10);
+        }, 30000);
+    </script>
+</body>
+</html>

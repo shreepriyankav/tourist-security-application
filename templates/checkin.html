@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodic Check-In</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, 
+                rgba(173, 216, 230, 0.95), 
+                rgba(255, 182, 193, 0.9), 
+                rgba(135, 206, 250, 0.85)), 
+                        url('https://picsum.photos/seed/soft-clouds/1920/1080.jpg') center/cover fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Soft gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 182, 193, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(173, 216, 230, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 192, 203, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+            animation: floatingGradient 15s ease-in-out infinite;
+        }
+
+        @keyframes floatingGradient {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-20px, -20px) rotate(1deg); }
+            66% { transform: translate(20px, -10px) rotate(-1deg); }
+        }
+
+        /* Floating bubbles effect */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bubble {
+            position: fixed;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            animation: floatBubble 20s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes floatBubble {
+            from {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.4;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            to {
+                transform: translateY(-100vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(255, 182, 193, 0.6);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(173, 216, 230, 0.3),
+                        0 5px 20px rgba(255, 182, 193, 0.2),
+                        inset 0 0 30px rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
+            animation: gentleFloat 1s ease-out;
+        }
+
+        @keyframes gentleFloat {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 35px;
+            color: #ff69b4;
+            font-size: 2.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        h2::before,
+        h2::after {
+            content: '';
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #87ceeb, #ff69b4, transparent);
+        }
+
+        h2::before {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+
+        h2 i {
+            color: #87ceeb;
+            animation: gentlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        label {
+            color: #4682b4;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        label i {
+            font-size: 1.2rem;
+            color: #ff69b4;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(173, 216, 230, 0.2);
+            border: 2px solid rgba(135, 206, 250, 0.4);
+            border-radius: 12px;
+            color: #2c3e50;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff69b4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            padding-right: 50px;
+        }
+
+        select:hover {
+            border-color: rgba(255, 182, 193, 0.6);
+            background-color: rgba(173, 216, 230, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(173, 216, 230, 0.3);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #ff69b4;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+        }
+
+        select option {
+            background: #fff0f5;
+            color: #2c3e50;
+            padding: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px 20px;
+            background: rgba(173, 216, 230, 0.2);
+            border: 2px solid rgba(135, 206, 250, 0.4);
+            border-radius: 12px;
+            color: #2c3e50;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:hover {
+            border-color: rgba(255, 182, 193, 0.6);
+            background-color: rgba(173, 216, 230, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(173, 216, 230, 0.3);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff69b4;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+        }
+
+        textarea::placeholder {
+            color: rgba(44, 62, 80, 0.5);
+            font-style: italic;
+        }
+
+        button[type="submit"] {
+            padding: 18px 30px;
+            background: linear-gradient(135deg, #87ceeb, #ff69b4);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.3);
+        }
+
+        button[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button[type="submit"]:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4);
+            background: linear-gradient(135deg, #add8e6, #ff1493);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(-1px);
+        }
+
+        button[type="submit"] i {
+            font-size: 1.2rem;
+            animation: none;
+        }
+
+        button[type="submit"]:hover i {
+            animation: sendSignal 1s ease-in-out infinite;
+        }
+
+        @keyframes sendSignal {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(3px); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: rgba(173, 216, 230, 0.3);
+            color: #4682b4;
+            text-decoration: none;
+            border: 2px solid rgba(135, 206, 250, 0.4);
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            gap: 10px;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 182, 193, 0.3);
+            border-color: #ff69b4;
+            color: #ff1493;
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .back-link i {
+            transition: transform 0.3s ease;
+        }
+
+        .back-link:hover i {
+            transform: translateX(-3px);
+        }
+
+        /* Status indicator animations */
+        .status-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #87ceeb, #ff69b4);
+            border-radius: 50%;
+            animation: statusBlink 2s infinite;
+        }
+
+        @keyframes statusBlink {
+            0%, 100% { 
+                opacity: 1; 
+                box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+            }
+            50% { 
+                opacity: 0.5; 
+                box-shadow: 0 0 20px rgba(135, 206, 250, 0.5);
+            }
+        }
+
+        /* Soft badge effect */
+        .soft-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffb6c1, #87ceeb);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 3px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            select, textarea, button {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Loading animation */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.95), rgba(255, 182, 193, 0.95));
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ff69b4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #4682b4;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating bubbles -->
+    <div class="bubble" style="width: 40px; height: 40px; left: 10%; animation-delay: 0s;"></div>
+    <div class="bubble" style="width: 60px; height: 60px; left: 30%; animation-delay: 3s;"></div>
+    <div class="bubble" style="width: 30px; height: 30px; left: 50%; animation-delay: 1s;"></div>
+    <div class="bubble" style="width: 50px; height: 50px; left: 70%; animation-delay: 4s;"></div>
+    <div class="bubble" style="width: 35px; height: 35px; left: 90%; animation-delay: 2s;"></div>
+
+    <div class="container">
+        <div class="soft-badge">Check-In Portal</div>
+        <div class="status-indicator"></div>
+        
+        <h2><i class="fas fa-cloud-sun"></i>Periodic Check-In</h2>
+        
+        <form method="post">
+            <label for="status">
+                <i class="fas fa-heart"></i>
+                Status:
+            </label>
+            <select name="status" id="status">
+                <option value="Safe">Safe</option>
+                <option value="Delayed">Delayed</option>
+                <option value="Need Help">Need Help</option>
+            </select>
+
+            <label for="message">
+                <i class="fas fa-message"></i>
+                Message / Proof (Optional):
+            </label>
+            <textarea name="message" id="message" placeholder="Enter any additional information or upload proof..."></textarea>
+
+            <button type="submit">
+                <i class="fas fa-paper-plane"></i>
+                Submit Check-In
+            </button>
+        </form>
+        
+        <div style="text-align: center;">
+            <a href="/tourist/dashboard" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Sending Check-In...</div>
+    </div>
+
+    <script>
+        // Add form submission animation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        });
+
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate form elements on load
+            const formElements = document.querySelectorAll('label, select, textarea, button');
+            formElements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+
+            // Add character counter for textarea
+            const textarea = document.querySelector('textarea');
+            const maxLength = 500;
+            
+            textarea.addEventListener('input', function() {
+                if (this.value.length > maxLength) {
+                    this.value = this.value.substring(0, maxLength);
+                }
+            });
+
+            // Add status change effect
+            const statusSelect = document.querySelector('select');
+            statusSelect.addEventListener('change', function() {
+                const container = document.querySelector('.container');
+                if (this.value === 'Need Help') {
+                    container.style.borderColor = 'rgba(255, 99, 71, 0.8)';
+                    container.style.boxShadow = '0 15px 40px rgba(255, 99, 71, 0.3), 0 5px 20px rgba(255, 99, 71, 0.2), inset 0 0 30px rgba(255, 255, 255, 0.5)';
+                } else if (this.value === 'Delayed') {
+                    container.style.borderColor = 'rgba(255, 165, 0, 0.8)';
+                    container.style.boxShadow = '0 15px 40px rgba(255, 165, 0, 0.3), 0 5px 20px rgba(255, 165, 0, 0.2), inset 0 0 30px rgba(255, 255, 255, 0.5)';
+                } else {
+                    container.style.borderColor = 'rgba(255, 182, 193, 0.6)';
+                    container.style.boxShadow = '0 15px 40px rgba(173, 216, 230, 0.3), 0 5px 20px rgba(255, 182, 193, 0.2), inset 0 0 30px rgba(255, 255, 255, 0.5)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

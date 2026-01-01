@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tourist Safety System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2068&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(0, 20, 40, 0.85);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            animation: fadeIn 1.2s ease-out;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #4fc3f7;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: slideDown 1s ease-out;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #4fc3f7, transparent);
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: #bbdefb;
+            animation: fadeIn 1.5s ease-out;
+        }
+        
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+        
+        .btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 220px;
+            height: 220px;
+            background: rgba(25, 118, 210, 0.2);
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            padding: 25px;
+            transition: all 0.4s ease;
+            border: 2px solid rgba(79, 195, 247, 0.3);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover:before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-15px);
+            background: rgba(25, 118, 210, 0.35);
+            border-color: #4fc3f7;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #4fc3f7;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover .btn-icon {
+            transform: scale(1.2);
+            color: #29b6f6;
+        }
+        
+        .btn-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .btn-desc {
+            font-size: 0.95rem;
+            color: #bbdefb;
+            line-height: 1.4;
+        }
+        
+        .admin-btn {
+            background: rgba(211, 47, 47, 0.2);
+            border-color: rgba(239, 83, 80, 0.3);
+        }
+        
+        .admin-btn .btn-icon {
+            color: #ef5350;
+        }
+        
+        .admin-btn:hover {
+            background: rgba(211, 47, 47, 0.35);
+            border-color: #ef5350;
+        }
+        
+        .admin-btn:hover .btn-icon {
+            color: #f44336;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 60px;
+            gap: 20px;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            max-width: 280px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            animation: fadeInUp 1s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .feature:nth-child(1) { animation-delay: 0.3s; }
+        .feature:nth-child(2) { animation-delay: 0.6s; }
+        .feature:nth-child(3) { animation-delay: 0.9s; }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            color: #4fc3f7;
+        }
+        
+        .feature-text {
+            text-align: left;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #bbdefb;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            color: #90a4ae;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .buttons-container {
+                gap: 20px;
+            }
+            
+            .btn {
+                width: 180px;
+                height: 180px;
+                padding: 20px;
+            }
+            
+            .btn-icon {
+                font-size: 3rem;
+            }
+            
+            .btn-title {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .buttons-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                height: auto;
+                min-height: 180px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tourist Safety Monitoring System</h1>
+        <p class="tagline">Ensuring safe and enjoyable travel experiences with advanced monitoring technology</p>
+        
+        <div class="buttons-container">
+            <a href="/admin" class="btn admin-btn">
+                <i class="fas fa-user-shield btn-icon pulse"></i>
+                <div class="btn-title">Admin Portal</div>
+                <div class="btn-desc">System administration and monitoring dashboard</div>
+            </a>
+            
+            <a href="/tourist/login" class="btn">
+                <i class="fas fa-sign-in-alt btn-icon"></i>
+                <div class="btn-title">Tourist Login</div>
+                <div class="btn-desc">Access your safety dashboard and alerts</div>
+            </a>
+            
+            <a href="/tourist/register" class="btn">
+                <i class="fas fa-user-plus btn-icon"></i>
+                <div class="btn-title">Tourist Register</div>
+                <div class="btn-desc">Create a new account for safety monitoring</div>
+            </a>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-map-marked-alt feature-icon"></i>
+                <div class="feature-text">
+                    <div class="feature-title">Real-time Location Tracking</div>
+                    <div class="feature-desc">Monitor tourist locations in real-time</div>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <i class="fas fa-exclamation-triangle feature-icon"></i>
+                <div class="feature-text">
+                    <div class="feature-title">Emergency Alerts</div>
+                    <div class="feature-desc">Instant notifications in case of emergencies</div>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <div class="feature-text">
+                    <div class="feature-title">Safety Zones</div>
+                    <div class="feature-desc">Designated safe areas with increased monitoring</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Tourist Safety System © 2023 | Ensuring safe travel experiences worldwide</p>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+            
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    const icon = this.querySelector('.btn-icon');
+                    icon.classList.add('fa-bounce');
+                    
+                    // Add ripple effect
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 1000);
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    const icon = this.querySelector('.btn-icon');
+                    icon.classList.remove('fa-bounce');
+                });
+            });
+            
+            // Add typing effect to tagline
+            const tagline = document.querySelector('.tagline');
+            const originalText = tagline.textContent;
+            tagline.textContent = '';
+            let i = 0;
+            
+            function typeWriter() {
+                if (i < originalText.length) {
+                    tagline.textContent += originalText.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 30);
+                }
+            }
+            
+            // Start typing effect after a short delay
+            setTimeout(typeWriter, 800);
+            
+            // Add floating animation to buttons on load
+            buttons.forEach((btn, index) => {
+                btn.style.animationDelay = `${index * 0.2}s`;
+                btn.classList.add('fadeInUp');
+            });
+        });
+    </script>
+</body>
+</html>

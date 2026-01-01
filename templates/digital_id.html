@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Tourist ID</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, 
+                rgba(41, 128, 185, 0.9), 
+                rgba(109, 33, 79, 0.85)), 
+                        url('https://picsum.photos/seed/digital-passport/1920/1080.jpg') center/cover fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(109, 33, 79, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(41, 128, 185, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(52, 152, 219, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+            animation: floatingGradient 15s ease-in-out infinite;
+        }
+
+        @keyframes floatingGradient {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-20px, -20px) rotate(1deg); }
+            66% { transform: translate(20px, -10px) rotate(-1deg); }
+        }
+
+        /* Tech grid pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            padding-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h2::before,
+        h2::after {
+            content: '';
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3498db, #9b59b6, transparent);
+        }
+
+        h2::before {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+
+        h2 i {
+            color: #3498db;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .id-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .id-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+        }
+
+        .id-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .id-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .id-logo i {
+            font-size: 2.5rem;
+            color: #3498db;
+        }
+
+        .id-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        . hologram {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+        }
+
+        .hologram::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 70%
+            );
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .id-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            position: relative;
+        }
+
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(155, 89, 182, 0.1));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3498db;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .info-row:hover .info-icon {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.3), rgba(155, 89, 182, 0.2));
+            transform: scale(1.05);
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: 500;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .digital-id {
+            position: relative;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.05));
+            border-radius: 15px;
+            border: 1px dashed rgba(52, 152, 219, 0.3);
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .digital-id:hover {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(155, 89, 182, 0.1));
+            border-color: rgba(52, 152, 219, 0.5);
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(52, 152, 219, 0.2);
+            border: none;
+            border-radius: 8px;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3498db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .copy-button:hover {
+            background: rgba(52, 152, 219, 0.3);
+            color: #2980b9;
+        }
+
+        .copy-button.copied {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .qr-note {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.05));
+            border-radius: 12px;
+            color: #7f8c8d;
+            font-style: italic;
+            transition: all 0.3s ease;
+        }
+
+        .qr-note:hover {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(155, 89, 182, 0.1));
+            color: #34495e;
+        }
+
+        .qr-note i {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9, #8e44ad);
+        }
+
+        .back-link i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-link:hover i {
+            transform: translateX(-5px);
+        }
+
+        /* Floating particles effect */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .id-card {
+                padding: 30px 20px;
+            }
+
+            .info-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+
+            .info-value {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Loading animation */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(41, 128, 185, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating particles -->
+    <i class="fas fa-fingerprint particle" style="left: 10%; animation-delay: 0s; font-size: 2rem;"></i>
+    <i class="fas fa-id-card particle" style="left: 30%; animation-delay: 3s; font-size: 2.5rem;"></i>
+    <i class="fas fa-shield-alt particle" style="left: 50%; animation-delay: 1s; font-size: 2.2rem;"></i>
+    <i class="fas fa-lock particle" style="left: 70%; animation-delay: 4s; font-size: 2rem;"></i>
+    <i class="fas fa-user-check particle" style="left: 90%; animation-delay: 2s; font-size: 2.3rem;"></i>
+
+    <div class="container">
+        <h2><i class="fas fa-id-badge"></i>Digital Tourist ID</h2>
+        
+        <div class="id-card">
+            <div class="id-header">
+                <div class="id-logo">
+                    <i class="fas fa-passport"></i>
+                    <div class="id-title">Digital Identity</div>
+                </div>
+                <div class="hologram">ID</div>
+            </div>
+            
+            <div class="id-content">
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Name</div>
+                        <div class="info-value">{{ user.name }}</div>
+                    </div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ user.email }}</div>
+                    </div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Digital ID</div>
+                        <div class="digital-id">
+                            <button class="copy-button" id="copyButton" title="Copy to clipboard">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <div class="info-value">{{ user.digital_id }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-note">
+                <i class="fas fa-qrcode"></i>
+                <span>(QR Code can be generated from this ID)</span>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="/tourist/dashboard" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div style="color: white; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;">Loading...</div>
+    </div>
+
+    <script>
+        // Add copy functionality
+        document.getElementById('copyButton').addEventListener('click', function() {
+            const digitalId = document.querySelector('.digital-id .info-value').textContent;
+            navigator.clipboard.writeText(digitalId).then(() => {
+                this.classList.add('copied');
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                
+                setTimeout(() => {
+                    this.classList.remove('copied');
+                    this.innerHTML = '<i class="fas fa-copy"></i>';
+                }, 2000);
+            });
+        });
+
+        // Add animations on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const infoRows = document.querySelectorAll('.info-row');
+            infoRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                }, 100 * index);
+            });
+
+            // Animate hologram
+            const hologram = document.querySelector('.hologram');
+            setInterval(() => {
+                hologram.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    hologram.style.transform = 'scale(1)';
+                }, 500);
+            }, 3000);
+        });
+
+        // Add loading effect on back button click
+        document.querySelector('.back-link').addEventListener('click', function(e) {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

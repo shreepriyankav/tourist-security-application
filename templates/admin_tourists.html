@@ -1,0 +1,313 @@
+<!-- Import Google Fonts and Font Awesome for Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-50px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    body {
+        /* High-resolution travel background from Unsplash */
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                    url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        color: #fff;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+    
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://www.transparenttextures.com/patterns/dots.png');
+        opacity: 0.1;
+        pointer-events: none;
+    }
+
+    h2 {
+        font-weight: 600;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 1s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    h2 i {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 1000px;
+        overflow-x: auto;
+        animation: slideInLeft 0.8s ease-out;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #333;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    th {
+        background: linear-gradient(135deg, #0077b6, #00a8cc);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        position: relative;
+    }
+    
+    th i {
+        margin-right: 8px;
+        color: white;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        position: relative;
+    }
+    
+    td:first-child {
+        font-weight: 500;
+    }
+    
+    td:last-child {
+        font-family: 'Courier New', monospace;
+        background-color: rgba(0, 119, 182, 0.05);
+        border-radius: 5px;
+    }
+
+    tr {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    tr:hover {
+        background-color: rgba(0, 119, 182, 0.1);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    tr:last-child td {
+        border-bottom: none;
+    }
+    
+    /* Add decorative elements to cells */
+    td::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: linear-gradient(to bottom, #0077b6, #00a8cc);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+    
+    tr:hover td::before {
+        transform: scaleY(1);
+    }
+
+    .btn-back {
+        margin-top: 30px;
+        text-decoration: none;
+        background: linear-gradient(135deg, #0077b6, #00a8cc);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+        box-shadow: 0 5px 15px rgba(0, 119, 182, 0.3);
+        animation: fadeIn 1.2s ease-out;
+    }
+
+    .btn-back:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 119, 182, 0.4);
+    }
+    
+    .btn-back i {
+        margin-right: 10px;
+        color: white;
+    }
+    
+    /* Add decorative elements */
+    .decorative-element {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 119, 182, 0.2) 0%, rgba(0, 119, 182, 0) 70%);
+        z-index: -1;
+    }
+    
+    .decorative-element.top-right {
+        top: -100px;
+        right: -100px;
+    }
+    
+    .decorative-element.bottom-left {
+        bottom: -100px;
+        left: -100px;
+    }
+    
+    /* Add a loading animation for the table */
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        border-radius: 15px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    
+    .loading-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+    
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(0, 119, 182, 0.2);
+        border-top: 5px solid #0077b6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Add responsive design */
+    @media (max-width: 768px) {
+        h2 {
+            font-size: 1.8rem;
+        }
+        
+        .container {
+            padding: 20px;
+        }
+        
+        th, td {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<div class="decorative-element top-right"></div>
+<div class="decorative-element bottom-left"></div>
+
+<h2><i class="fas fa-plane-departure"></i> Registered Tourists</h2>
+
+<div class="container">
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th><i class="fas fa-user"></i> Name</th>
+                <th><i class="fas fa-envelope"></i> Email</th>
+                <th><i class="fas fa-phone"></i> Phone</th>
+                <th><i class="fas fa-id-card"></i> Digital ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in tourists %}
+            <tr>
+                <td><i class="fas fa-user-circle" style="color: #0077b6; margin-right: 8px;"></i> {{ t.name }}</td>
+                <td><i class="fas fa-at" style="color: #0077b6; margin-right: 8px;"></i> {{ t.email }}</td>
+                <td><i class="fas fa-mobile-alt" style="color: #0077b6; margin-right: 8px;"></i> {{ t.phone }}</td>
+                <td style="word-break:break-all;"><i class="fas fa-fingerprint" style="color: #0077b6; margin-right: 8px;"></i> {{ t.digital_id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="/admin/dashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
+
+<script>
+    // Simulate loading
+    document.addEventListener('DOMContentLoaded', function() {
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        
+        // Show loading for demonstration
+        setTimeout(() => {
+            loadingOverlay.classList.remove('active');
+        }, 500);
+        
+        // Add click event to table rows for potential interactions
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('click', function() {
+                // Add a pulse animation when clicked
+                this.style.animation = 'pulse 0.5s ease';
+                setTimeout(() => {
+                    this.style.animation = '';
+                }, 500);
+            });
+        });
+    });
+</script>

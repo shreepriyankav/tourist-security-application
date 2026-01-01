@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                        url('https://img.freepik.com/free-vector/realistic-travel-background-with-elements_52683-77784.jpg?semt=ais_hybrid&w=740&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .element1 {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .element2 {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            bottom: 20%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .element3 {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            top: 50%;
+            left: 10%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-30px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(30px) rotate(240deg);
+            }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 10px 0 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .sidebar-header {
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #667eea;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-role {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        nav {
+            flex: 1;
+            padding: 30px 0;
+            overflow-y: auto;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        li:nth-child(1) { animation-delay: 0.1s; }
+        li:nth-child(2) { animation-delay: 0.2s; }
+        li:nth-child(3) { animation-delay: 0.3s; }
+        li:nth-child(4) { animation-delay: 0.4s; }
+        li:nth-child(5) { animation-delay: 0.5s; }
+        li:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        a {
+            display: flex;
+            align-items: center;
+            padding: 18px 25px;
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        a:hover::before {
+            left: 100%;
+        }
+
+        a:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            color: #667eea;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        a i {
+            font-size: 1.3rem;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        a:hover i {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        /* Logout button */
+        .logout-section {
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-out 0.8s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .logout-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .logout-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .logout-link i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            animation: signOut 2s infinite;
+        }
+
+        @keyframes signOut {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(-5px);
+            }
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+        }
+
+        .welcome-banner {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            margin: 30px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .welcome-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .welcome-text h3 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 15px;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Quick actions */
+        .quick-actions {
+            margin: 0 30px 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: scaleIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .action-card:nth-child(1) { animation-delay: 0.1s; }
+        .action-card:nth-child(2) { animation-delay: 0.2s; }
+        .action-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes scaleIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+
+        .action-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .action-card h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .action-card p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+
+            .welcome-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f5576c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="floating-element element1"></div>
+        <div class="floating-element element2"></div>
+        <div class="floating-element element3"></div>
+    </div>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h2>Tourist Dashboard</h2>
+            <p class="user-role">Safe Travel Companion</p>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <a href="/tourist/itinerary/new">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Itinerary
+                    </a>
+                </li>
+                <li>
+                    <a href="/tourist/itineraries">
+                        <i class="fas fa-list-alt"></i>
+                        View Itineraries
+                    </a>
+                </li>
+                <li>
+                    <a href="/tourist/geofence">
+                        <i class="fas fa-map-marked-alt"></i>
+                        Geo-Fence Awareness
+                    </a>
+                </li>
+                <li>
+                    <a href="/tourist/checkin">
+                        <i class="fas fa-clock"></i>
+                        Periodic Check-In
+                    </a>
+                </li>
+                <li>
+                    <a href="/tourist/post-trip">
+                        <i class="fas fa-file-alt"></i>
+                        Post-Trip Report
+                    </a>
+                </li>
+                <li>
+                    <a href="/tourist/digital-id">
+                        <i class="fas fa-id-card"></i>
+                        View Digital ID
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="logout-section">
+            <a href="/tourist/logout" class="logout-link">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner">
+            <div class="welcome-content">
+                <div class="welcome-text">
+                    <h3>Welcome Back, Traveler!</h3>
+                    <p>Your safety is our priority. Explore your dashboard features below.</p>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Active Trips</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Check-ins</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Safety Score</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <div class="action-card">
+                <i class="fas fa-route"></i>
+                <h4>Plan Route</h4>
+                <p>Create your travel itinerary</p>
+            </div>
+            <div class="action-card">
+                <i class="fas fa-shield-alt"></i>
+                <h4>Safety Check</h4>
+                <p>Verify your safety status</p>
+            </div>
+            <div class="action-card">
+                <i class="fas fa-phone-alt"></i>
+                <h4>Emergency</h4>
+                <p>Quick emergency contacts</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Add interactive effects
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Create ripple effect
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.5)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s ease-out';
+                ripple.style.pointerEvents = 'none';
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Animate stats on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'countUp 1s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-number').forEach(stat => {
+            observer.observe(stat);
+        });
+
+        // Add countUp animation
+        const countUpStyle = document.createElement('style');
+        countUpStyle.textContent = `
+            @keyframes countUp {
+                from {
+                    transform: scale(0.5);
+                    opacity: 0;
+                }
+                to {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(countUpStyle);
+
+        // Quick action cards click handler
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.animation = 'cardClick 0.3s ease-out';
+                setTimeout(() => {
+                    this.style.animation = '';
+                }, 300);
+            });
+        });
+
+        // Add cardClick animation
+        const cardClickStyle = document.createElement('style');
+        cardClickStyle.textContent = `
+            @keyframes cardClick {
+                0% {
+                    transform: scale(1) translateY(-10px);
+                }
+                50% {
+                    transform: scale(0.95) translateY(-5px);
+                }
+                100% {
+                    transform: scale(1) translateY(-10px);
+                }
+            }
+        `;
+        document.head.appendChild(cardClickStyle);
+    </script>
+</body>
+</html>

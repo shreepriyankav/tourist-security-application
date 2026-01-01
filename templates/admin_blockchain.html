@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain & Logs (Prototype)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(0, 20, 40, 0.9)), 
+                        url('https://picsum.photos/seed/blockchain-tech/1920/1080.jpg') center/cover fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            color: #e0e0e0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated binary background */
+        .binary-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.1;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+        }
+
+        .binary-column {
+            position: absolute;
+            top: -100%;
+            font-size: 14px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(calc(100vh + 100%));
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: rgba(10, 25, 47, 0.95);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2), 
+                        inset 0 0 20px rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+            animation: glowIn 1s ease-out;
+        }
+
+        @keyframes glowIn {
+            from {
+                opacity: 0;
+                box-shadow: 0 0 0 rgba(0, 255, 255, 0);
+            }
+            to {
+                opacity: 1;
+                box-shadow: 0 0 50px rgba(0, 255, 255, 0.2), 
+                           inset 0 0 20px rgba(0, 255, 255, 0.1);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00ffff;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-transform: uppercase;
+        }
+
+        h2::before,
+        h2::after {
+            content: '';
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: scan 3s linear infinite;
+        }
+
+        h2::before {
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        h2::after {
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes scan {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(1); }
+            100% { transform: scaleX(0); }
+        }
+
+        h2 i {
+            color: #00ff00;
+            animation: rotate 4s linear infinite;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: rgba(0, 10, 20, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        th {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 0, 0.1));
+            color: #00ffff;
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.5);
+            position: relative;
+        }
+
+        th i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            color: #00ff00;
+        }
+
+        tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        tr:hover {
+            background: rgba(0, 255, 255, 0.05);
+            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        td {
+            padding: 16px 20px;
+            font-size: 0.95rem;
+            color: #b0b0b0;
+            position: relative;
+        }
+
+        td:first-child {
+            color: #00ff00;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        td:nth-child(2) {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #ffff00;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 12px 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        td:nth-child(2):hover {
+            color: #00ffff;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.8);
+            cursor: pointer;
+        }
+
+        td:nth-child(2)::before {
+            content: '⚡';
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff00;
+            opacity: 0.5;
+        }
+
+        td:nth-child(3) {
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hash-copy {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .hash-copy:hover {
+            color: #00ff00;
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        .note {
+            text-align: center;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            font-size: 0.9rem;
+            padding: 15px;
+            background: rgba(0, 255, 255, 0.05);
+            border-left: 3px solid #00ffff;
+            border-radius: 5px;
+        }
+
+        .note i {
+            margin-right: 8px;
+            color: #00ffff;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 35px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 0, 0.1));
+            color: #00ffff;
+            text-decoration: none;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .back-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            border-color: #00ffff;
+            color: #00ff00;
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-button:hover i {
+            transform: translateX(-5px);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Blockchain connection lines */
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            animation: pulseLine 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseLine {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            th, td {
+                padding: 12px 10px;
+                font-size: 0.85rem;
+            }
+
+            td:nth-child(2) {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Loading animation */
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffff, #00ff00, #00ffff);
+            background-size: 200% 100%;
+            animation: loading 2s linear infinite;
+            display: none;
+            z-index: 1000;
+        }
+
+        @keyframes loading {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Binary rain effect -->
+    <div class="binary-rain" id="binaryRain"></div>
+
+    <!-- Loading bar -->
+    <div class="loading-bar" id="loadingBar"></div>
+
+    <div class="container">
+        <h2><i class="fas fa-cube"></i>Blockchain & Logs (Prototype)</h2>
+        
+        <div class="table-wrapper">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user-astronaut"></i>Tourist</th>
+                        <th><i class="fas fa-fingerprint"></i>Hash (Digital ID)</th>
+                        <th><i class="fas fa-clock"></i>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in logs %}
+                    <tr>
+                        <td>{{ l.name }}</td>
+                        <td style="word-break:break-all;">{{ l.digital_id }}</td>
+                        <td>{{ l.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <p class="note"><i class="fas fa-info-circle"></i>* Hashes simulate blockchain immutability</p>
+        
+        <div class="button-container">
+            <a href="/admin/dashboard" class="back-button">
+                <i class="fas fa-arrow-left"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Generate binary rain effect
+        function createBinaryRain() {
+            const binaryRain = document.getElementById('binaryRain');
+            const columns = Math.floor(window.innerWidth / 20);
+            
+            for (let i = 0; i < columns; i++) {
+                const column = document.createElement('div');
+                column.className = 'binary-column';
+                column.style.left = i * 20 + 'px';
+                column.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                column.style.animationDelay = Math.random() * 5 + 's';
+                
+                let binary = '';
+                for (let j = 0; j < 30; j++) {
+                    binary += Math.random() > 0.5 ? '1' : '0' + '<br>';
+                }
+                column.innerHTML = binary;
+                
+                binaryRain.appendChild(column);
+            }
+        }
+
+        // Add animations to table rows
+        document.addEventListener('DOMContentLoaded', function() {
+            createBinaryRain();
+            
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+
+            // Add copy functionality for hashes
+            const hashCells = document.querySelectorAll('td:nth-child(2)');
+            hashCells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const text = this.textContent;
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.style.background = 'rgba(0, 255, 0, 0.1)';
+                        setTimeout(() => {
+                            this.style.background = 'rgba(0, 0, 0, 0.3)';
+                        }, 500);
+                    });
+                });
+            });
+
+            // Add hover effect for hash cells
+            hashCells.forEach(cell => {
+                cell.title = 'Click to copy hash';
+            });
+        });
+
+        // Loading effect on back button click
+        document.querySelector('.back-button').addEventListener('click', function(e) {
+            document.getElementById('loadingBar').style.display = 'block';
+        });
+
+        // Regenerate binary rain on window resize
+        window.addEventListener('resize', () => {
+            document.getElementById('binaryRain').innerHTML = '';
+            createBinaryRain();
+        });
+    </script>
+</body>
+</html>

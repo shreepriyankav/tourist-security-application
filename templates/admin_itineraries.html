@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itinerary Monitoring</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://picsum.photos/seed/travel-map/1920/1080.jpg') center/cover fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 2px;
+        }
+
+        h2 i {
+            margin-right: 15px;
+            color: #3498db;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            position: relative;
+        }
+
+        th i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        tr {
+            transition: all 0.3s ease;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(236, 240, 241, 0.5);
+        }
+
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            position: relative;
+        }
+
+        td:first-child {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        td:last-child {
+            text-align: center;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status.active {
+            background-color: #2ecc71;
+            color: white;
+            animation: statusPulse 2s infinite;
+        }
+
+        .status.pending {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .status.completed {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .status.cancelled {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        @keyframes statusPulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            margin-top: 10px;
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .back-button:hover i {
+            transform: translateX(-5px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .floating-icons {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-icon {
+            position: absolute;
+            opacity: 0.1;
+            color: white;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            th i {
+                display: none;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            color: #3498db;
+            animation: spin 1.5s infinite linear;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating background icons -->
+    <div class="floating-icons">
+        <i class="fas fa-plane floating-icon" style="left: 10%; animation-delay: 0s; font-size: 3rem;"></i>
+        <i class="fas fa-map-marked-alt floating-icon" style="left: 25%; animation-delay: 5s; font-size: 2.5rem;"></i>
+        <i class="fas fa-globe floating-icon" style="left: 40%; animation-delay: 2s; font-size: 3.5rem;"></i>
+        <i class="fas fa-compass floating-icon" style="left: 60%; animation-delay: 7s; font-size: 2.8rem;"></i>
+        <i class="fas fa-suitcase floating-icon" style="left: 75%; animation-delay: 3s; font-size: 3rem;"></i>
+        <i class="fas fa-passport floating-icon" style="left: 90%; animation-delay: 6s; font-size: 2.5rem;"></i>
+    </div>
+
+    <div class="container">
+        <h2><i class="fas fa-route"></i>Itinerary Monitoring</h2>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user"></i>Tourist</th>
+                        <th><i class="fas fa-calendar-alt"></i>Dates</th>
+                        <th><i class="fas fa-map-marker-alt"></i>Locations</th>
+                        <th><i class="fas fa-info-circle"></i>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in trips %}
+                    <tr>
+                        <td>{{ t.name }}</td>
+                        <td>{{ t.start_date }} → {{ t.end_date }}</td>
+                        <td>{{ t.locations }}</td>
+                        <td><span class="status {{ t.status|lower }}">{{ t.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="loading">
+            <i class="fas fa-spinner"></i>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="/admin/dashboard" class="back-button">
+                <i class="fas fa-arrow-left"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Add animation to table rows on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+
+            // Add click effect to rows
+            rows.forEach(row => {
+                row.addEventListener('click', function() {
+                    this.style.animation = 'pulse 0.5s ease';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 500);
+                });
+            });
+        });
+
+        // Simulate loading state when navigating
+        document.querySelector('.back-button').addEventListener('click', function(e) {
+            document.querySelector('.loading').style.display = 'block';
+            document.querySelector('.table-container').style.opacity = '0.5';
+        });
+    </script>
+</body>
+</html>
